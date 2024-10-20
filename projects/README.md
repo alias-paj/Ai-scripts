@@ -64,39 +64,6 @@ A single **swatch** contains of
     * Swatch ...
   * SwatchGroup...
 
-
-The colour information are stored in a  and a groupItem for each swatchGroup.
-
-The Each **swatch group** does have its **groupItem** named as the **swatchGroup** containing a **textFrame** with the groups name.
-
-or uses to store all 
-The script creates several **layerItems, groupItems, textItems, and pathItems**. Those items are structured as following.
-
-> Names of all **groupItems** follow the same scheme: **()**+name
-
-All items are stored in a newly created layer placed top in the active document, named **ColourExport**. Inside this layer you can find the **textItem** containing the **tab-delimited table** named **csv_export** and groupItem for each swatchGroup.
-
-Each **swatch group** does have its **groupItem** named as the **swatchGroup** containing a **textFrame** with the groups name.
-
-Inside, the single swatches are stored in seperate **groupItems** named as the **swatch** containing a 
-
-* **textFrame** with the swatchs name, a 
-* **groupItem** for the visual representation, and a
-* **groupItem** for the values.
-
-Example:
-
-* ColourExport (layerItem)
-  * csv_export (textFrameItem)
-  * SwatchGroup (groupItem)
-    * Name (textFrameItem)
-    * Swatch (groupItem)
-      * Name (textFrameItem)
-      * ()Colours (groupItem)
-      * ()Values (groupItem)
-    * Swatch ...
-  * SwatchGroup...
-
 # ScaleByValue
 **Adobe Illustrator** does only allow to scale several **items** individual at once by a given scaling factor (e.g. 80%), but not to a fixed value (e.g. 10 mm). This script overcomes this lack in functionality by allowing you to scale almost every given object to a defined value.
 
