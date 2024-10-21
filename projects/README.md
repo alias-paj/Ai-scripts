@@ -7,31 +7,30 @@ Version: 22.0 and above
 
 This script creates a **Colour Palette** or  **Look Up Table (LUT)** based **global colour**s used in the user's selection. In addition it saves all processed colour information in a **tab-delimited table** for easy copy and paste. <br> I do recomended to copy the text into a *.txt-file and modify the table to your needs before importing it into excle or any other program.
 
-## What it is good for
+## What this script is good for
 
-
-## Step by step
+## How this script works - step by step
 1. Get the user's selection.
 2. Check if **fill** and/or **stroke** colour of each selected is a **gobal colour** and
-    - save new colours to an array
-    - save new **tint** value
+  <br>&nbsp; **a.** save new colours to an array
+  <br>&nbsp; **b.** save new **tint** value
 3. Get the name of the corresponding **swatch group**
 4. Convert the colour values to:
-   - RGB
-   - CMYK
-   - HEX
-   - HSB
-   - CIE-lab
+  <br>&nbsp; **a.** RGB
+  <br>&nbsp; **b.** CMYK
+  <br>&nbsp; **c.** HEX
+  <br>&nbsp; **d.** HSB
+  <br>&nbsp; **e.** CIE-lab
 5. Create a new **layer** placed top in the active document named **ColourExport**. This layer will be used to store all items created by this script.
 6. Write all colour values into a **textframe** named **csv_export**.
-   - The data is formated in a **tab-delimited** fashion
-   - The values are stored with a **dot (.)** as a decimal seperator - due to scripting reasons.
-   - The **textframe** is set to **hidden**
+  <br>&nbsp; **a.** The data is formated in a **tab-delimited** fashion
+  <br>&nbsp; **b.** The values are stored with a **dot (.)** as a decimal seperator - due to scripting reasons.
+  <br>&nbsp; **c.** The **textframe** is set to **hidden**
 7. Create a **groupItem** for each **swatchgroup**
 8. Create a summary for each colour containing
-   - a colour filled rectangle
-   - all **tint** values lined up in rectangles
-   - the values of the different colourspace written out
+  <br>&nbsp; **a.** a colour filled rectangle
+  <br>&nbsp; **b.** all **tint** values lined up in rectangles
+  <br>&nbsp; **c.** the values of the different colourspace written out
 
 ## Limitations
 The script does only process **gobal colours** other colours are ignored. <br> 
@@ -42,7 +41,6 @@ The text appreance is defined by **Pragraph** and **Character Styles** making it
 he script was run. <br>
 The individual **item**s are group to rearange and modify to the layout to your individual needs.
 
-
 ## Layer structure
 The script creates a main **layerItem** called **ColourExport** at top of the **active document** to store all **item**s it creates. Inside this layer you can find the **textframe** containing the **tab-delimited table** named **csv_export** and the **groupItem**s for each **swatchGroup**.
 
@@ -52,7 +50,6 @@ A single **swatch** contains of
 - **groupItem** for the values.
 
 ### Example:
-
 * ColourExport (layerItem)
   * csv_export (textFrameItem)
   * SwatchGroup (groupItem)
@@ -65,29 +62,74 @@ A single **swatch** contains of
   * SwatchGroup...
 
 # ScaleByValue
-**Adobe Illustrator** does only allow to scale several **items** individual at once by a given scaling factor (e.g. 80%), but not to a fixed value (e.g. 10 mm). This script overcomes this lack in functionality by allowing you to scale almost every given object to a defined value.
+**Adobe Illustrator** by default does only allow to batch scale **items** (Object > Transfrom > **Transform Each...** ) by a given scaling factor (e.g. 80% ), but not to a fixed value (e.g. 10 mm ). This script overcomes this lack in functionality by allowing you to scale almost every given object to a fixed value.
 
-This script allows you to define
-- the **refencePoint** each item will be scaled to (TopLeft, CenterCenter, BottomLeft, ...)
-- a width value each item should be scaled to
-- a height value each item should be scaled to
-- a contrained proportional scale
+This script allows you to: 
+- define a **width** value each **item** should be scaled to
+- define a **height** value each **item** should be scaled to
+- constrain the **item**'s proportions
+- define the **refencePoint** each **item** will be scaled to (TopLeft, CenterCenter, BottomLeft, ...)
 
 Futher more the script can 
-- convert units to the **document unit** (in to mm)
+- convert your input units to **document unit** (in to mm)
 - calculate simple math operations (5+5, or 10/2)
 - do math operation on each **item** individually (+ 5 mm, or / 2)
 
 ## What it is good for
-This script comes in handy if you need to scale a datapoints (circles) in scatterplot to a defined size (2 mm x 2 mm) without calculating the scaling factor manually. <br>
-Another use case would be to scale similar objects to the same width and/or height throughout a the whole document.
+I created the script to work with imported graphs from graphpad prism, R - ggplot2, or other statistics programs more easily. This script allows to consolidate the dimensions of datapoints (mostly circles) over different graphs by setting the **width** and **height** for all **item**'s at once. <br>
+However, you can use the script to scale almost any types of **items** in one go.
 
 ## Step by step
+The script reads the user's selection and :
+1. Remove **textframe** and **guides** from selection
+2. Wait for user input
+3. Evaluate **height** or **width** value
+  <br>&nbsp; a. convert input units to document unit
+  <br>&nbsp; b. remove all text symbols that are not **numbers** or **math symbols**
+  <br>&nbsp; c. extract the prefix math operator if present
+  <br>&nbsp; d. calcuate the math
+  <br>&nbsp; e. check if the resulting value is below **Adobe Illustrator**'s minimal dimension.
+4. Check if **constrain proportions** is set.
+  <br>Change **height** or **width** value to ""
+5. Scale each **item** individually
+  <br>&nbsp; a. Check if the **item** is a clipping mask
+  <br>&nbsp; b. Get the position of the **Reference Point**
+  <br>&nbsp; c. Calculate relative **scale factor** depending on extracted **math operator** and set **constrain proportions**
+  <br>&nbsp; d. Cacluate new position
+  <br>&nbsp; e. Resize the **item** and set the new position
+6. Check if all **scaling factor**s are positive.
+<br> If not, undo the 5. step
 
-The script 
+## Possiblities
+- You can feed any unit known to Adobe Illustrator into this script and it will be converted to the set document unit.
+- You can do simple calcuations like (50 + 50, or 23/3) like you can do in all other text input fields Adobe Illustrator
+- You can add and subtract values from each **item** individually by typing **+ 5 mm** or **- 20 cm**. This will result in an increase the size of each **item** individually by **5 mm** or a rduction by **20 cm**. An input of **/ 2** or **\* 4** will be equal to the default Adobe Illustrator **Transform Each...** function input **50%** or **400%**.
+- You set the **width** or **height** value and let the script calculate the corresponding value - if the **constrain proportions** is set.
+
+## Limitations
+The script does only an insufficient error check. A negative **scale factor** results in a screen flash due to a **app.redraw() app.undo()** call. A inpossible position is not checked at all.
 
 # Subselect
+## What it is good for
+## Step by step
+## Limitations
+## Possiblities
+
 # SwapGroupLayer
+## What it is good for
+## Step by step
+## Limitations
+## Possiblities
+
 # BatchReplace
+## What it is good for
+## Step by step
+## Limitations
+## Possiblities
+
 # RenameByType
+## What it is good for
+## Step by step
+## Limitations
+## Possiblities
    
