@@ -1,5 +1,7 @@
 # Automating tasks in Adobe Illustrator
 
+**Adobe Illustrator** might be the leading standard for vector graphics, however it lacks a some basic functionalities in batch processing. Scaling multipe objects to an absolute value is not possible, as well as replacing multiple items by an other one. I wrote the following scripts to make my life in **Adobe Illustrator** easier and save me a lot of time.
+
 ## Scripts
 This repository includes the following of my scripts: 
  - [**DrawColourPalette**](https://github.com/alias-paj/Ai-scripts/blob/main/projects/DrawColourPalette.jsx)
@@ -20,6 +22,7 @@ For further information on the possibilities and restrictions of each script rea
 
 ## How to install/run scripts
 
+## Write scripts on your own
 
 
 ## Places to find good information
