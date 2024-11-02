@@ -2,7 +2,7 @@
 var scriptConst = {
     name: "rePlace",
     version: "1.0.1",
-    date: "2022-12-25",
+    date: "2024-11-01",
     author: "Philipp Jordan",
     webpage: "www.JordanGraphics.eu",
     description: "Replaces all items with the first item in the list.",
@@ -65,10 +65,14 @@ var jgUI = { // create & update UI
     txtInfo: scriptConst.webpage,
 
     createRefPoint: function (uiParent) {
+        //creates a 3 by 3 grid of radiobuttons mimiking the Reference Point layout in Illustrator
         var rtnUI = new Object();
 
         var mainGrp = uiParent.add("group");
         mainGrp.orientation = "column";
+
+        // first letter defines vertical position: T = top, C = center, B = bottom
+        // second letter defines horizontal position: L = left, C = center, R = right
 
         var topGrp = mainGrp.add("group");
         rtnUI.TL = topGrp.add("radiobutton")
@@ -87,97 +91,125 @@ var jgUI = { // create & update UI
 
         return rtnUI
     },
-    updtRefPnt: function (uiInput) {
-        for (var i in uiRef) uiRef[i].value = false;
-        uiInput.value = true;
+    updateRefPoint: function (uiInput) {
+        // updates the reference point layout and the items drawn
+        for (var i in uiRef) uiRef[i].value = false; // deactives all radiobuttons in the reference point grid (value = false)
+        uiInput.value = true; // activates the ticked radiobutton
 
-        uiRef.CL.enabled = uiRef.CR.enabled = !uiConstrain.width.value;
+        // Check if constrains are set and disable the corresponding radiobuttons
+        // You can't choose left or right if you already scaled the items to the width
+        uiRef.CL.enabled = uiRef.CR.enabled = !uiConstrain.width.value; 
         uiRef.TC.enabled = uiRef.BC.enabled = !uiConstrain.height.value;
         uiRef.TL.enabled = uiRef.TR.enabled = uiRef.BL.enabled = uiRef.BR.enabled = uiConstrain.width.value || uiConstrain.height.value ? false : true;
+
+        jgExe.updateTransform(); // updates the items position
     },
-    updtWidth: function () {
+    updateWidth: function () {
+        // sets the new reference point after the contrain was ticked
+        // left and right will be set to center
         if (uiRef.TL.value || uiRef.TC.value || uiRef.TR.value) {
-            jgUI.updtRefPnt(uiRef.TC);
+            jgUI.updateRefPoint(uiRef.TC);
             user.refPoint = Transformation.TOP;
         } else if (uiRef.CL.value || uiRef.CC.value || uiRef.CR.value) {
-            jgUI.updtRefPnt(uiRef.CC);
+            jgUI.updateRefPoint(uiRef.CC);
             user.refPoint = Transformation.CENTER;
         } else if (uiRef.BL.value || uiRef.BC.value || uiRef.BR.value) {
-            jgUI.updtRefPnt(uiRef.BC);
+            jgUI.updateRefPoint(uiRef.BC);
             user.refPoint = Transformation.BOTTOM;
         };
     },
-    updtHeight: function () {
+    updateHeight: function () {
+        // sets the new reference point after the contrain was ticked
+        // top and bottom will be set to center
         if (uiRef.TL.value || uiRef.CL.value || uiRef.BL.value) {
-            jgUI.updtRefPnt(uiRef.CL);
             user.refPoint = Transformation.LEFT;
+            jgUI.updateRefPoint(uiRef.CL);
         } else if (uiRef.TC.value || uiRef.CC.value || uiRef.BC.value) {
-            jgUI.updtRefPnt(uiRef.CC);
             user.refPoint = Transformation.CENTER;
+            jgUI.updateRefPoint(uiRef.CC);
         } else if (uiRef.TR.value || uiRef.CR.value || uiRef.BR.value) {
-            jgUI.updtRefPnt(uiRef.CR);
             user.refPoint = Transformation.RIGHT;
+            jgUI.updateRefPoint(uiRef.CR);
         };
     },
-    updtTransform: function () {
-        app.undo();
-        for (var i = 0; i < srcItems.length; i++) jgExe.createItem(srcItems[i], user);
-        app.redraw();
-        user.undo = true;
-    },
+
 };
 
 var jgExe = { // execution functions
-    subSelect: function (srcSel) {
-        var rtnArray = new Array();
-        for (var i = 0; i < srcSel.length; i++) {
-            if (srcSel[i].typename == "PathItem" && srcSel[i].guides) continue; // removes guides
-            if (srcSel[i].typename == "GroupItem" && srcSel[i].clipped) continue; // removes clipping masks
-            if (srcSel[i].typename == "TextFrame") continue; // removes textframes
-            rtnArray.push(srcSel[i]);
-        };
-        return rtnArray;
-    },
     getRefPosition: function (item, refPoint) {
+        // gets the position of the reference point relative to item position
         refPoint = typeof refPoint !== "undefined" ? refPoint : Transformation.TOPLEFT;
         switch (refPoint) {
             case Transformation.TOPLEFT:
-                return [0, 0]
+                return [
+                    0,
+                    0
+                ]
             case Transformation.TOP:
-                return [0 + (item.width / 2), 0]
+                return [
+                    0 + (item.width / 2),
+                    0
+                ]
             case Transformation.TOPRIGHT:
-                return [0 + item.width, 0]
+                return [
+                    0 + item.width,
+                    0
+                ]
             case Transformation.LEFT:
-                return [0, 0 - (item.height / 2)]
+                return [
+                    0,
+                    0 - (item.height / 2)
+                ]
             case Transformation.CENTER:
-                return [0 + (item.width / 2), 0 - (item.height / 2)]
+                return [
+                    0 + (item.width / 2),
+                    0 - (item.height / 2)
+                ]
             case Transformation.RIGHT:
-                return [0 + item.width, 0 - (item.height / 2)]
+                return [
+                    0 + item.width,
+                    0 - (item.height / 2)
+                ]
             case Transformation.BOTTOMLEFT:
-                return [0, 0 - item.height]
+                return [
+                    0,
+                    0 - item.height
+                ]
             case Transformation.BOTTOM:
-                return [0 + (item.width / 2), 0 - item.height]
+                return [
+                    0 + (item.width / 2),
+                    0 - item.height
+                ]
             case Transformation.BOTTOMRIGHT:
-                return [0 + item.width, 0 - item.height]
+                return [
+                    0 + item.width,
+                    0 - item.height
+                ]
             default:
                 return [0, 0]
         }
     },
     createItem: function (item, user) {
-        var newItem = user.keyItem.duplicate(item, ElementPlacement.PLACEBEFORE);
+        var newItem = user.keyItem.duplicate(item, ElementPlacement.PLACEBEFORE); // creates a new item based on the KEY item
 
-        if (newItem.width != 0) newItem.width = user.chngWidth ? item.width : newItem.width;
-        if (newItem.height != 0) newItem.height = user.chngHeight ? item.height : newItem.height;
+        newItem.width = user.chngWidth ? item.width : newItem.width; // set width to NEW or KEY item depending on users contrain
+        newItem.height = user.chngHeight ? item.height : newItem.height; // set height to NEW or KEY item depending on users contrain
 
-        newItem.name = item.name;
-        newItem.opacity /= user.chngOpacity;
+        newItem.name = item.name; // rename the item to KEY item's name
+        newItem.opacity /= user.chngOpacity; // lower the opacity, value set in the user object
 
-        var srcRef = this.getRefPosition(item, user.refPoint);
-        var keyRef = this.getRefPosition(newItem, user.refPoint);
+        var srcRef = this.getRefPosition(item, user.refPoint); // calcualte the relative reference position of the KEY item
+        var keyRef = this.getRefPosition(newItem, user.refPoint); // calcualte the relative reference position of the OLD item
 
-        newItem.position = item.position.add(srcRef).substract(keyRef);
+        newItem.position = item.position.add(srcRef).substract(keyRef); // change the position of the new item by adding relative reference position of the OLD item and subtracting the NEW
 
-        if (user.remove) item.remove();
+        if (user.remove) item.remove(); // remove the OLD item if true. Will be called once by "OK"
+    },
+    updateTransform: function () {
+        if (user.undo) app.undo(); 
+        for (var i = 0; i < srcItems.length; i++) this.createItem(srcItems[i], user); // creates for all selected items a new duplicate of the KEY item
+        app.redraw(); // updates the drawing area
+        user.undo = true; // toggles undo to be execute the next time
     },
 }
 
@@ -187,7 +219,14 @@ var exeMain = function () { // main function
         return;
     };
 
-    srcItems = jgExe.subSelect(app.activeDocument.selection); // get all items (no textframe , no guides)
+    srcItems = new Array();
+    for (var i = 0; i < app.activeDocument.selection.length; i++) {
+        var xItem = app.activeDocument.selection[i];
+        if (xItem.typename == "PathItem" && xItem.guides) continue; // removes guides
+        if (xItem.typename == "GroupItem" && xItem.clipped) continue; // removes clipping masks
+        if (xItem.typename == "TextFrame") continue; // removes textframes
+        srcItems.push(xItem);
+    };
 
     if (srcItems.length <= 1) {
         alert("One or less items were selected.");
@@ -195,13 +234,7 @@ var exeMain = function () { // main function
     };
 
     user.keyItem = srcItems.shift();
-
-    uiRef.CC.value = true
-    uiConstrain.width.enabled = user.keyItem.width == 0 ? false : true;
-    uiConstrain.height.enabled = user.keyItem.height == 0 ? false : true;
-
-    for (var i = 0; i < srcItems.length; i++) jgExe.createItem(srcItems[i], user);
-    app.redraw();
+    jgUI.updateRefPoint(uiRef.CC)
 
     mainWindow.show();
 }
@@ -237,66 +270,55 @@ mainWindow.add("statictext").text = jgUI.txtInfo;
 //---------------Ui Eventhandler---------------------
 uiRef.TL.onClick = function () {
     user.refPoint = Transformation.TOPLEFT;
-    jgUI.updtRefPnt(this);
-    jgUI.updtTransform();
+    jgUI.updateRefPoint(this);
 };
 uiRef.TC.onClick = function () {
     user.refPoint = Transformation.TOP;
-    jgUI.updtRefPnt(this);
-    jgUI.updtTransform();
+    jgUI.updateRefPoint(this);
 };
 uiRef.TR.onClick = function () {
     user.refPoint = Transformation.TOPRIGHT;
-    jgUI.updtRefPnt(this);
-    jgUI.updtTransform();
+    jgUI.updateRefPoint(this);
 };
 uiRef.CL.onClick = function () {
     user.refPoint = Transformation.LEFT;
-    jgUI.updtRefPnt(this);
-    jgUI.updtTransform();
+    jgUI.updateRefPoint(this);
 };
 uiRef.CC.onClick = function () {
     user.refPoint = Transformation.CENTER;
-    jgUI.updtRefPnt(this);
-    jgUI.updtTransform();
+    jgUI.updateRefPoint(this);
 };
 uiRef.CR.onClick = function () {
     user.refPoint = Transformation.RIGHT;
-    jgUI.updtRefPnt(this);
-    jgUI.updtTransform();
+    jgUI.updateRefPoint(this);
 };
 uiRef.BL.onClick = function () {
     user.refPoint = Transformation.BOTTOMLEFT;
-    jgUI.updtRefPnt(this);
-    jgUI.updtTransform();
+    jgUI.updateRefPoint(this);
 };
 uiRef.BC.onClick = function () {
     user.refPoint = Transformation.BOTTOM;
-    jgUI.updtRefPnt(this);
-    jgUI.updtTransform();
+    jgUI.updateRefPoint(this);
 };
 uiRef.BR.onClick = function () {
     user.refPoint = Transformation.BOTTOMRIGHT;
-    jgUI.updtRefPnt(this);
-    jgUI.updtTransform();
+    jgUI.updateRefPoint(this);
 };
 
 uiConstrain.width.onClick = function () {
     user.chngWidth = this.value;
-    jgUI.updtWidth(this.value);
-    jgUI.updtTransform();
+    jgUI.updateWidth(this.value);
 }
 
 uiConstrain.height.onClick = function () {
     user.chngHeight = this.value;
-    jgUI.updtHeight(this.value);
-    jgUI.updtTransform();
+    jgUI.updateHeight(this.value);
 }
 
 exeOK.onClick = function () {
     user.remove = true;
     user.chngOpacity = 1;
-    jgUI.updtTransform()
+    jgExe.updateTransform()
     mainWindow.close();
 }
 

@@ -110,30 +110,29 @@ var jgUI = { // create & update UI
     constrainTip: "Keep the height and width for each item constraint individually.",
     createRefPoint: function (uiParent) { // create radiobutton grid to select reference point
         var rtnUI = new Object();
-        rtnUI.btn = new Object();
 
-        rtnUI.mainGrp = uiParent.add("group");
-        rtnUI.mainGrp.orientation = "column";
+        var mainGrp = uiParent.add("group");
+        mainGrp.orientation = "column";
 
         // first letter defines vertical position: T = top, C = center, B = bottom
         // second letter defines horizontal position: L = left, C = center, R = right
 
-        var topGrp = rtnUI.mainGrp.add("group");
-        rtnUI.btn.TL = topGrp.add("radiobutton")
-        rtnUI.btn.TC = topGrp.add("radiobutton")
-        rtnUI.btn.TR = topGrp.add("radiobutton")
+        var topGrp = mainGrp.add("group");
+        rtnUI.TL = topGrp.add("radiobutton")
+        rtnUI.TC = topGrp.add("radiobutton")
+        rtnUI.TR = topGrp.add("radiobutton")
 
-        var centerGrp = rtnUI.mainGrp.add("group");
-        rtnUI.btn.CL = centerGrp.add("radiobutton")
-        rtnUI.btn.CC = centerGrp.add("radiobutton")
-        rtnUI.btn.CR = centerGrp.add("radiobutton")
+        var centerGrp = mainGrp.add("group");
+        rtnUI.CL = centerGrp.add("radiobutton")
+        rtnUI.CC = centerGrp.add("radiobutton")
+        rtnUI.CR = centerGrp.add("radiobutton")
 
-        var centerGrp = rtnUI.mainGrp.add("group");
-        rtnUI.btn.BL = centerGrp.add("radiobutton")
-        rtnUI.btn.BC = centerGrp.add("radiobutton")
-        rtnUI.btn.BR = centerGrp.add("radiobutton")
+        var centerGrp = mainGrp.add("group");
+        rtnUI.BL = centerGrp.add("radiobutton")
+        rtnUI.BC = centerGrp.add("radiobutton")
+        rtnUI.BR = centerGrp.add("radiobutton")
 
-        for (var i in rtnUI.btn) rtnUI.btn[i].value = false;
+        for (var i in rtnUI) rtnUI[i].value = false;
 
         return rtnUI
     },
@@ -164,7 +163,7 @@ var jgUI = { // create & update UI
         uiHeight.input.text = user.height.string;
     },
     inputRefPoint: function (uiInput) {
-        for (var i in uiRef.btn) uiRef.btn[i].value = false;
+        for (var i in uiRef) uiRef[i].value = false;
         uiInput.value = true;
 
         this.updateTransform(srcItems)
@@ -365,7 +364,7 @@ var exeMain = function () {
 
     uiWidth.unit.text = uiHeight.unit.text = jgAi.getGlobalUnit().nameShort; // set text for global unit
     uiWidth.input.active = true; // set width input active, to enable a direct start
-    uiRef.btn.CC.value = true; // set uiRefPoint to center
+    uiRef.CC.value = true; // set uiRefPoint to center
 
     mainWindow.show();
 }
@@ -422,39 +421,39 @@ mainWindow.add("statictext").text = jgUI.txtInfo;
 
 
 //---------------Ui Eventhandler---------------------
-uiRef.btn.TL.onClick = function () {
+uiRef.TL.onClick = function () {
     user.refPoint = Transformation.TOPLEFT;
     jgUI.inputRefPoint(this);
 };
-uiRef.btn.TC.onClick = function () {
+uiRef.TC.onClick = function () {
     user.refPoint = Transformation.TOP;
     jgUI.inputRefPoint(this);
 };
-uiRef.btn.TR.onClick = function () {
+uiRef.TR.onClick = function () {
     user.refPoint = Transformation.TOPRIGHT;
     jgUI.inputRefPoint(this);
 };
-uiRef.btn.CL.onClick = function () {
+uiRef.CL.onClick = function () {
     user.refPoint = Transformation.LEFT;
     jgUI.inputRefPoint(this);
 };
-uiRef.btn.CC.onClick = function () {
+uiRef.CC.onClick = function () {
     user.refPoint = Transformation.CENTER;
     jgUI.inputRefPoint(this);
 };
-uiRef.btn.CR.onClick = function () {
+uiRef.CR.onClick = function () {
     user.refPoint = Transformation.RIGHT;
     jgUI.inputRefPoint(this);
 };
-uiRef.btn.BL.onClick = function () {
+uiRef.BL.onClick = function () {
     user.refPoint = Transformation.BOTTOMLEFT;
     jgUI.inputRefPoint(this);
 };
-uiRef.btn.BC.onClick = function () {
+uiRef.BC.onClick = function () {
     user.refPoint = Transformation.BOTTOM;
     jgUI.inputRefPoint(this);
 };
-uiRef.btn.BR.onClick = function () {
+uiRef.BR.onClick = function () {
     user.refPoint = Transformation.BOTTOMRIGHT;
     jgUI.inputRefPoint(this);
 };
