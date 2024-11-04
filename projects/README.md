@@ -21,10 +21,21 @@ Replacing the shapes of multiple itmes at once is not possible. Using **Symbols*
 [Link to the detailed documentation](BatchReplace.md) <br>
 [Link to the script](BatchReplace.jsx)
 
-## Subselect
-Description Missing
-## SwapGroupLayer
-Description Missing
-
 ## RenameByType
+It is hard to distiguish different types of objects in the layers panel. **Adobe Illustrator** does not used icons like **Blender** does. To overcome this issue I use a nameing pattern to idicate if I am dealing with an **Group** or **Clipping Mask**, with an **Compound Path** or just a regular **Path**. This script applies my naming pattern to all objects in the active document. I did not define some item types.
+
+[Link to the detailed documentation](RenamebyType.md) <br>
+[Link to the script](RenamebyType.jsx)
+
+## SwapGroupLayer
+>Application: Adobe Illustrator<br>
+Version: 22.0 and above
+
+Organising your file strucute in Adobe Illustrator can be tidious. **Layers** are good to keep things structured while still be able to easy select and modify items within. **Groups** are good to keep things together and not accedently change things, while still be able to move and transform the whole group. While both have their pros and cons it is hard to switch between them, especially if you have **nested layer** or **group structures**. <br>
+This script allows to switch between nested layer structures and group structures in one click.
+
+[Link to the detailed documentation](SwapGroupLayer.md) <br>
+[Link to the script](SwapGroupLayer.jsx)
+
+## Subselect
 Description Missing

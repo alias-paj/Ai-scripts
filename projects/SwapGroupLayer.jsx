@@ -7,7 +7,7 @@ var scriptConst = {
     webpage: "www.JordanGraphics.eu",
 };
 
-var allLayersSelected = function (xSel) { // checks if all ITEMS within the main LAYER are selected (quick and dirty)
+var allSelectedWithin = function (xSel) { // checks if all ITEMS within the given LAYER are selected (quick and dirty)
     allItems = xSel.parent.pageItems;
     for (var i = 0; i < allItems.length; i++) {
         if (!allItems[i].selected) return false;
@@ -55,14 +55,13 @@ var exeMain = function () {
         return;
     };
 
-    var srcDoc = app.activeDocument; // get active Document
-    var srcSel = srcDoc.selection; // get selection
+    var srcSel = app.activeDocument.selection; // get selection
 
     if (srcSel.length == 0) {
         // test if a selection was made
         alert("Please select a group or a layer.");
         return;
-    } else if (srcSel.length == 1 && srcSel[0].typename == "GroupItem" && !srcSel[0].clipped && !allLayersSelected(srcSel[0])) {
+    } else if (srcSel.length == 1 && srcSel[0].typename == "GroupItem" && !srcSel[0].clipped && !allSelectedWithin(srcSel[0])) {
         // test if single item was seleted AND selected item is "GroupItem" BUT NOT "ClippingMask" AND NOT all items within the main layer
         toLayer(srcSel[0]);
         return;
@@ -70,7 +69,7 @@ var exeMain = function () {
         // test if selected layer is top layer
         alert("Can't execute script on top layer.");
         return;
-    } else if (srcSel.length >= 1 && allLayersSelected(srcSel[0])) {
+    } else if (srcSel.length >= 1 && allSelectedWithin(srcSel[0])) {
         // test if more than 1 item was selected AND all items within a layer where selected
         toGroup(srcSel[0].parent);
         return;

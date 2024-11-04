@@ -1,23 +1,58 @@
 /// Const
 var scriptConst = {
     name: "BatchRename",
-    version: "1.0",
-    date: "16.10.2024",
+    version: "1.1",
+    date: "04.11.2024",
     author: "Philipp Jordan",
     webpage: "www.jordangraphics.eu",
 };
 
+/// user defined values
+var user = {
+    pattern: {
+        PathItems: "<>",
+        GroupItems: "()",
+        CompoundPathItems: "++",
+        GridRepeatItems: "||",
+        RadialRepeatItems: "||",
+        SymmetryRepeatItems: "||",
+        TextFrames: "##",
+        LegacyTextItems: "##",
+        PluginItems: "**",
+        /*
+        No symbols are defined for the following items
+        SymbolItems: "..",
+        PlacedItems: "..",
+        GraphItems: "..",
+        MeshItems: "..",
+        NonNativeItems: "..",
+        EmbeddedItems: "..",
+        RasterItems: "..",
+        */
+        ClippingMasks: "[]",
+        fallback: "..", // not used
+    },
+};
+
 /// function
-var reName = function (xList, regExp, pattern, isGroup) {
-    var regExp = typeof regExp == "undefined" ? /^(\.\.)+/ : regExp;    // set default regExp value to  /^(\.\.)+/
-    var pattern = typeof pattern == "undefined" ? ".." : pattern;       // set default pattern value to ".."      
-    var isGroup = typeof isGroup == "undefined" ? false : true;         // set default isGroup value to false
-    for (i = 0; i < xList.length; i++) {
-        if (isGroup && xList[i].clipped) { // override pattern and regExp if it is a group and clipped -> ClippingMask
-            var pattern = "[]";
-            var regExp = /^(\[\])+/;
+var reName = function (itemList) {
+    for (i = 0; i < itemList.length; i++) {
+        if (itemList[i].name == "") continue; // if item not named, continue with the next one.
+        if (itemList[i].typename == "GroupItem" && itemList[i].clipped) var pattern = user.pattern.ClippingMasks; // override pattern and regExp if it is a group and clipped -> ClippingMask
+
+        var xName = itemList[i].name;
+        for (var itemType in user.pattern) {
+            var pat = user.pattern[itemType]; // get pattern text
+            xName = xName.replace("/^(" + pat + ")", ""); // remove pattern at the beginning if found
+            if (xName.search("\\" + pat[0]) >= 0 && xName.search("\\" + pat[1]) >= 0) { // remove any pattern as long as both are found
+                xName = xName.replace(pat[0], "");
+                xName = xName.replace(pat[1], "");
+            }
+            //if (xName.search("\\" + pat[0]) == 0 && xName.search("\\" + pat[1]) == xName.length) { // remove pattern at the start and end if found
+            //    xName = xName.substring(1, xName.length - 1);
+            //};
         }
-        if (xList[i].name != "" && xList[i].name.search(regExp) != 0) xList[i].name = (pattern + xList[i].name);
+        itemList[i].name = pattern + xName;
     }
 };
 
@@ -27,31 +62,12 @@ var exeMain = function () {
         return;
     };
 
-    srcDoc = app.activeDocument; // get active Document
+    var srcDoc = app.activeDocument; // get active Document
 
-    reName(srcDoc.pathItems, /^(\<\>)+/, "<>");
-
-    reName(srcDoc.groupItems, /^(\(\))+/, "()", true); //Groups are renamed seperately due to clipping value
-
-    reName(srcDoc.compoundPathItems, /^(\+\+)+/, "++");
-
-    reName(srcDoc.gridRepeatItems, /^(\|\|)+/, "||");
-    reName(srcDoc.radialRepeatItems, /^(\|\|)+/, "||");
-    reName(srcDoc.symmetryRepeatItems, /^(\|\|)+/, "||");
-
-    reName(srcDoc.textFrames, /^##+/, "##");
-    reName(srcDoc.legacyTextItems, /^##+/, "##");
-
-    reName(srcDoc.pluginItems, /^(\*\*)+/, "**");
-
-    // items not used often
-    reName(srcDoc.symbolItems);
-    reName(srcDoc.placedItems);
-    reName(srcDoc.graphItems);
-    reName(srcDoc.meshItems);
-    reName(srcDoc.nonNativeItems);
-    reName(srcDoc.embeddedItems);
-    reName(srcDoc.rasterItems);
+    for (var key in user.pattern) {
+        var callList = key[0].toLowerCase() + key.slice(1)
+        if (srcDoc.hasOwnProperty(callList)) reName(srcDoc[callList]);
+    }
 }
 
 /// start
