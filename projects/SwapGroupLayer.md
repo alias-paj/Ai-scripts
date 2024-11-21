@@ -11,17 +11,24 @@ I created this script to work within group structures more easily. **CLICK** and
 ## Step by step
 1. The script loads the user's selection.
 2. Test if items were selected, otherwise cancel the script
-3. Test if selection is a **group** by the following conditions: 
-    <br>&nbsp; a. **only one** item was selected,
-    <br>&nbsp; b. the selected item is a **group**,
-    <br>&nbsp; c. is **not** a **clipping mask**, and
-    <br>&nbsp; d. all items within the group are selected.
-<br> If all conditions are true the selected **group** and subgroups will be transformed to **Layers**.
-4. Test if the selected items are not part of the **main layers** - cancel the script if so.
-5. Test if the selection is a *complete* **layer** by the following conditions:
-  <br>&nbsp; a. **more than one** item was selected, and 
-    <br>&nbsp; b. all items of the layer were selected.
-    <br> If all conditions are true the **layer** of the selected items will be transformed into a **group**.
+3. Test if the user selection does only contain **group**s and run **toLayer** fucntion if so: 
+    * Each item is a **GroupItem**
+    * Non of the items is **clipped**
+    
+    **toLayer**, transforms all groups and subgroups into layers and sublayers.
+    <br>The script will stop after this.
+4. Search for the top most **layers**, in which all items are selected.
+    * Check if the **parent** of an item is a **layer** (avoids that the script will be processed on document level)
+    * Check if all items within the **parent layer** are selected
+      * if TRUE, repeat the last check with the **parent layer**
+      * if FALSE, save the current **layer** for later processing
+    
+    If **layer**s were found run **toGroup** function. This function transforms all **layers** and suplayers into **groups** and subgroups.
+5. If neither of both
+    * selection contains only **group**s,
+    * **layer**s with all items selected within
+    
+    were found, an alert will given to inform that nothing was done.
 
 ### toGroup
 In order to transform **layers to groups** the follwing steps are performed:
@@ -51,4 +58,3 @@ Endless
 The inital check for layers and groups is very basic.
 >[!NOTE]
 >Let me know if you have better solutions or issues
-
