@@ -55,6 +55,4 @@ In order to transfrom **groups to layers** the following steps are done:
 Endless
 
 ## Limitations
-The inital check for layers and groups is very basic.
->[!NOTE]
->Let me know if you have better solutions or issues
+The script does read or apply any attributes of the **group**s or **layer**s.

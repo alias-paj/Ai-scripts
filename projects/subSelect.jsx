@@ -101,14 +101,19 @@ var jgUI = {
     createPanel: function (parentObject) {
         var rtnObj = new Object();
 
-        rtnObj.panel = parentObject.add("panel");
-        rtnObj.panel.orientation = "row";
+        parentObject.add("panel");
 
-        rtnObj.minStat = rtnObj.panel.add("statictext");
+        rtnObj.title = parentObject.add("statictext");
+        rtnObj.title.alignment = ["left", "center"];
+
+        rtnObj.grp = parentObject.add("group");
+        rtnObj.grp.orientation = "row";
+
+        rtnObj.minStat = rtnObj.grp.add("statictext");
         rtnObj.minStat.justify = "center";
         rtnObj.minStat.preferredSize.width = this.widthStat;
 
-        sliderGroup = rtnObj.panel.add("group");
+        sliderGroup = rtnObj.grp.add("group");
         sliderGroup.orientation = "column";
         sliderGroup.spacing = 0;
 
@@ -117,14 +122,14 @@ var jgUI = {
         rtnObj.maxSldr = sliderGroup.add("Slider");
         rtnObj.maxSldr.preferredSize.width = this.widthSldr;
 
-        rtnObj.maxStat = rtnObj.panel.add("statictext");
+        rtnObj.maxStat = rtnObj.grp.add("statictext");
         rtnObj.maxStat.justify = "center";
         rtnObj.maxStat.preferredSize.width = this.widthStat;
 
         return rtnObj;
     },
     setupPanel: function (xUI, xProp) {
-        xUI.panel.text = xUI.titel + xProp.count + " / " + xProp.countOrg; // setup panel titel
+        xUI.title.text = xUI.titel + xProp.count + " / " + xProp.countOrg; // setup panel titel
         xUI.minStat.text = xProp.minOrg + " | " + xProp.min; // setup static text for MINIMUM values
         xUI.maxStat.text = xProp.max + " | " + xProp.maxOrg; // setup static text for MAXIMUM values
         xUI.minSldr.minvalue = xUI.maxSldr.minvalue = xProp.minOrg; // setup Slider range for MINIMUM
@@ -134,7 +139,7 @@ var jgUI = {
     },
     updatePanel: function (xUI, xProp) {
         uiTitle.text = "Items selected ( " + updtItems.length + "/" + initItems.length + " )"; // main text
-        xUI.panel.text = xUI.titel + xProp.count + " / " + xProp.countOrg; // panel titel
+        xUI.title.text = xUI.titel + xProp.count + " / " + xProp.countOrg; // panel titel
         xUI.minStat.text = xProp.minOrg + " | " + xProp.min; // update static text for MINIMUM values
         xUI.maxStat.text = xProp.max + " | " + xProp.maxOrg; // update static text for MAXIMUM values
         xUI.minSldr.value = xProp.min; // update MINIMUM slider
@@ -143,23 +148,13 @@ var jgUI = {
 }
 
 var jgExe = {
-    getItems: {
-        subsetSelection: function (type) {
-            var srcItmes = app.activeDocument.selection;
-            var rtnItems = new Array();
-            for (var i = 0; i < srcItmes.length; i++) {
-                if (srcItmes[i].typename == type) rtnItems.push(srcItmes[i]);
-            }
-            return rtnItems
-        },
-        subsetType: function (type) {
-            var srcItmes = app.activeDocument[type];
-            var rtnItems = new Array();
-            for (var i = 0; i < srcItmes.length; i++) {
-                if (srcItmes[i].selected) rtnItems.push(srcItmes[i]);
-            }
-            return rtnItems
-        },
+    getItems: function (type) {
+        var srcItmes = app.activeDocument.selection;
+        var rtnItems = new Array();
+        for (var i = 0; i < srcItmes.length; i++) {
+            if (srcItmes[i].typename == type) rtnItems.push(srcItmes[i]);
+        }
+        return rtnItems
     },
     getProperties: function (items) {
         items = typeof items !== 'undefined' ? items : app.activeDocument.selection;
@@ -191,7 +186,7 @@ var jgExe = {
                 maxOrg: Math.ceil(arrDst.max()),
                 countOrg: arrDst.length
             },
-            are : {
+            are: {
                 min: Math.floor(arrAre.min()),
                 max: Math.ceil(arrAre.max()),
                 count: arrAre.length,
@@ -238,11 +233,11 @@ exeMain = function () {
         alert("No active document was found.");
         return;
     }
+
     defaultUnit = jgAi.getGlobalUnit();
 
     // get information 
-    //initItems = updtItems = jgExe.getItems.subsetType("PathItems"); // gets all pathitems in the selection, no matter of they placed in other objects. Takes a huge amount of time
-    initItems = updtItems = jgExe.getItems.subsetSelection("PathItem"); // gets only the path objects that are free to excess, no objects inside groups or something else.
+    initItems = updtItems = jgExe.getItems("PathItem"); // gets only the path objects that are free to excess, no objects inside groups or something else.
     selProp = jgExe.getProperties(initItems);
 
     if (initItems.length <= 1) {
@@ -267,6 +262,7 @@ exeMain = function () {
 /// main window
 mainWindow = new Window("dialog");
 mainWindow.text = scriptConst.name + " v" + scriptConst.version + " by JordanGraphics";
+mainWindow.spacing = 2;
 
 uiTitle = mainWindow.add('statictext');
 uiPnt = jgUI.createPanel(mainWindow); // Point Number
@@ -276,6 +272,7 @@ uiAre = jgUI.createPanel(mainWindow); // Area
 // exeGroup
 exeGrp = mainWindow.add("group");
 exeGrp.alignment = ["right", "center"];
+exeGrp.margins = 10;
 
 exeReset = exeGrp.add("button {text: 'Reset'}");
 exeOK = exeGrp.add("button {text: 'OK'}")
