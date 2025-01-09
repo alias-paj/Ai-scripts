@@ -48,3 +48,6 @@ The script does only an insufficient error check. It does check only if all dime
 
 > [!NOTE]
 > If you know a way to do a proper check if an item falls off the canvas, please let me know.
+
+## Ideas and Requests
+- It would be nice to toggle between only pathItems should be scaled - no matter they are nested in a group or not - and groupItems should be scaled too. Right now, the second case is true for everything.
